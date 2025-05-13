@@ -1,31 +1,29 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { Autocomplete } from './components/Autocomplete';
+import { SearchBar } from './components/SearchBar/SearchBar';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const handlePersonSelected = useCallback((person: Person | null) => {
-    setSelectedPerson(person);
-  }, []);
-
-  const titleText = selectedPerson
-    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-    : 'No selected person';
+  useEffect(() => {
+    document.title = selectedPerson
+      ? `Selected Person: ${selectedPerson.name} (${selectedPerson.born || ''} - ${selectedPerson.died || ''})`
+      : 'No selected person';
+  }, [selectedPerson]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {titleText}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born || ''} - ${selectedPerson.died || ''})`
+            : 'No selected person'}
         </h1>
-
-        <Autocomplete
+        <SearchBar
           people={peopleFromServer}
-          onSelected={handlePersonSelected}
-          delay={300}
+          onPersonSelected={setSelectedPerson}
         />
       </main>
     </div>
